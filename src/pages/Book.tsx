@@ -4,6 +4,7 @@ import { useParams } from 'react-router';
 import { BookDetails, BookProps, StoredBooksKeys } from '../types/types';
 import { addToList, deleteFromList, getIsInList, getStoredBooks } from '../utils/bookStorage';
 import { getRatingByBookId, setRating } from '../utils/ratingStorage';
+import { useSnackbar } from '../providers/SnackbarProvider';
 
 export const Book = ({ bookId, onBookAction }: BookProps) => {
   const params = useParams();
@@ -15,6 +16,7 @@ export const Book = ({ bookId, onBookAction }: BookProps) => {
   const isInWantToRead = getIsInList(storedBooks, StoredBooksKeys.WANT_TO_READ, id);
   const isInToBuy = getIsInList(storedBooks, StoredBooksKeys.TO_BUY, id);
   const [loading, setLoading] = useState<boolean>(false);
+  const { displayMessage } = useSnackbar();
 
   useEffect(() => {
     getBookInfo();
@@ -33,14 +35,18 @@ export const Book = ({ bookId, onBookAction }: BookProps) => {
           description: typeof data.description === 'string' ? data.description : data.description.value,
         };
         setBookDetails(book);
-        setLoading(false);
-      });
+      })
+      .catch(() => displayMessage(`Couldn't get information about book id ${id}`, true))
+      .finally(() => setLoading(false));
   };
 
   const getAuthor = (authorPath: string) => {
     return fetch(`https://openlibrary.org${authorPath}.json`)
       .then((response) => response.json())
-      .then((data) => data.name);
+      .then((data) => data.name)
+      .catch(() =>
+        displayMessage(`Couldn't get information about author id ${authorPath.replace('/authors/', '')}`, true)
+      );
   };
 
   return (
@@ -135,6 +141,7 @@ export const Book = ({ bookId, onBookAction }: BookProps) => {
             variant='outlined'
             onClick={() => {
               deleteFromList(storedBooks, StoredBooksKeys.READ, id);
+              displayMessage('Book deleted successfully from the list.');
               setStoredBooks(getStoredBooks());
               if (onBookAction) {
                 onBookAction();
@@ -148,6 +155,7 @@ export const Book = ({ bookId, onBookAction }: BookProps) => {
             variant='contained'
             onClick={() => {
               addToList(storedBooks, StoredBooksKeys.READ, id);
+              displayMessage('Book added successfully into the list.');
               setStoredBooks(getStoredBooks());
               if (onBookAction) {
                 onBookAction();
@@ -162,6 +170,7 @@ export const Book = ({ bookId, onBookAction }: BookProps) => {
             variant='outlined'
             onClick={() => {
               deleteFromList(storedBooks, StoredBooksKeys.WANT_TO_READ, id);
+              displayMessage('Book deleted successfully from the list.');
               setStoredBooks(getStoredBooks());
               if (onBookAction) {
                 onBookAction();
@@ -175,6 +184,7 @@ export const Book = ({ bookId, onBookAction }: BookProps) => {
             variant='contained'
             onClick={() => {
               addToList(storedBooks, StoredBooksKeys.WANT_TO_READ, id);
+              displayMessage('Book added successfully into the list.');
               setStoredBooks(getStoredBooks());
               if (onBookAction) {
                 onBookAction();
@@ -189,6 +199,7 @@ export const Book = ({ bookId, onBookAction }: BookProps) => {
             variant='outlined'
             onClick={() => {
               deleteFromList(storedBooks, StoredBooksKeys.TO_BUY, id);
+              displayMessage('Book deleted successfully from the list.');
               setStoredBooks(getStoredBooks());
               if (onBookAction) {
                 onBookAction();
@@ -202,6 +213,7 @@ export const Book = ({ bookId, onBookAction }: BookProps) => {
             variant='contained'
             onClick={() => {
               addToList(storedBooks, StoredBooksKeys.TO_BUY, id);
+              displayMessage('Book added successfully into the list.');
               setStoredBooks(getStoredBooks());
               if (onBookAction) {
                 onBookAction();

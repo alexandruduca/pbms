@@ -1,4 +1,5 @@
 import { PaletteMode } from '@mui/material/styles';
+import { JSX } from 'react';
 
 export type BookType = {
   id: string;
@@ -38,3 +39,11 @@ export type LayoutProps = {
 };
 
 export type BookApiResponse = Record<string, unknown>;
+
+export type SnackbarProviderProps = {
+  children: JSX.Element | JSX.Element[];
+};
+
+export type SnackbarContextType = {
+  displayMessage: (message: string, isError?: boolean) => void;
+};

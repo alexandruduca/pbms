@@ -6,6 +6,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { useMemo, useState } from 'react';
 import { getThemeMode } from './utils/themeStorage';
 import { Layout } from './components/Layout';
+import { SnackbarProvider } from './providers/SnackbarProvider';
 
 function App() {
   const [mode, setMode] = useState<PaletteMode>(getThemeMode());
@@ -23,14 +24,16 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <BrowserRouter>
-        <Routes>
-          <Route element={<Layout mode={mode} setMode={setMode} />}>
-            <Route path='/' element={<Home />} />
-            <Route path='/book/:id' element={<Book />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <SnackbarProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<Layout mode={mode} setMode={setMode} />}>
+              <Route path='/' element={<Home />} />
+              <Route path='/book/:id' element={<Book />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </SnackbarProvider>
     </ThemeProvider>
   );
 }

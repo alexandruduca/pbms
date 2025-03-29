@@ -3,11 +3,13 @@ import { useEffect, useState } from 'react';
 import { BookApiResponse, BookType } from '../types/types';
 import { BookOption } from './BookOption';
 import { useNavigate } from 'react-router';
+import { useSnackbar } from '../providers/SnackbarProvider';
 
 export const Searchbar = () => {
   const [searchTerm, setSearchTerm] = useState<string | null>('');
   const [books, setBooks] = useState<BookType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const { displayMessage } = useSnackbar();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,8 +36,9 @@ export const Searchbar = () => {
           coverImageId: book.cover_i,
         }));
         setBooks(books);
-        setLoading(false);
-      });
+      })
+      .catch(() => displayMessage('Something went wrong. Please try again later.', true))
+      .finally(() => setLoading(false));
   };
 
   return (
